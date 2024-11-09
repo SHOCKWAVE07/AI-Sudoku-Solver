@@ -4,3 +4,4 @@ pyrec_sudoku/__pycache__/
 cnn_logs/
 logs/
 pyrec_sudoku/model.pth
+myenv/

@@ -33,7 +33,7 @@ BATCH_SIZE = 128
 SHUFFLE_BUFFER_SIZE = 1000
 
 # Configure paths for checkpoints and training logs
-CHECKPOINT="/content/ckpt/sudoku-{epoch:02d}-{loss:.2f}.hdf5"
+CHECKPOINT = "cnn_ckpt/sudoku_cnn-{epoch:02d}-{loss:.2f}.keras"
 LOGS='./logs'
 
 # Get number of elements in the dataset
@@ -134,10 +134,12 @@ model = tf.keras.Sequential([
     tf.keras.layers.Softmax()
 ])
 
-model.compile(optimizer=tf.keras.optimizers.Adam(lr=1e-3),
-              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
+# Compile the model with Adam optimizer and SparseCategoricalCrossentropy loss
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
+              loss=tf.keras.losses.SparseCategoricalCrossentropy(),
               metrics=['sparse_categorical_accuracy'],
               run_eagerly=True)
+
 
 # Show the model summary
 model.summary()
@@ -151,7 +153,15 @@ tensorboard = TensorBoard(log_dir=LOGS, histogram_freq=0,
 callbacks_list = [checkpoint, tensorboard, reduce_lr]
 
 
-# Train the model
+# Define the directory for the final model in .hdf5 format
+FINAL_MODEL_PATH = "models/final_dnn__sudoku_model.hdf5"
+
+# Train the model with callbacks
 model_history = model.fit(train_dataset, epochs=EPOCHS,
-                          steps_per_epoch=num_train//BATCH_SIZE,
+                          steps_per_epoch=num_train // BATCH_SIZE,
                           callbacks=callbacks_list)
+
+# Save the model at the end of training as .hdf5
+model.save(FINAL_MODEL_PATH)
+print(f"Model saved to {FINAL_MODEL_PATH}")
+
