@@ -39,6 +39,7 @@ class SudokuSolver(nn.Module):
 
     # X is a (batch, n^2, n) tensor
     def forward(self, x):
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         n = self.n
         bts = x.shape[0]
         c = self.constraint_mask
@@ -61,7 +62,7 @@ class SudokuSolver(nn.Module):
             # Score the rows
             x_pred[empty_mask] = s_
 
-            s = torch.zeros_like(x_pred).cuda()
+            s = torch.zeros_like(x_pred).to(device)
             s[empty_mask] = s_
             # Find most probable guess
             score, score_pos = s.max(dim=2)
@@ -69,7 +70,7 @@ class SudokuSolver(nn.Module):
             # Fill it in
             nz = empty_mask.sum(dim=1).nonzero().view(-1)
             mmax_ = mmax[nz]
-            ones = torch.ones(nz.shape[0]).cuda()
+            ones = torch.ones(nz.shape[0]).to(device)
             x.index_put_((nz, mmax_, score_pos[nz, mmax_]), ones)
         return x_pred, x
 

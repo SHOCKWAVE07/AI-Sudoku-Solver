@@ -4,6 +4,7 @@
 import numpy as np
 import random
 import tensorflow as tf
+tf.config.run_functions_eagerly(True)
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Model
 from tensorflow.keras.models import load_model
@@ -11,8 +12,8 @@ from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint, Callback, R
 from tensorflow.keras.layers import Conv2D, BatchNormalization, PReLU, Input, Flatten, Dense, Reshape, AveragePooling2D
 
 # Load the inputs and labels as UINT8 numpy array
-puzzle=np.load('puzzle.npy')
-solution=np.load('solution.npy')
+puzzle=np.load('./test/raw_test_1/test_puzzles_1.npy')
+solution=np.load('./test/raw_test_1/test_solutions_1.npy')
 
 # Add channel axis and subtract one from elements of solution
 x_train, y_train = puzzle[...,np.newaxis], solution[..., np.newaxis] - 1
@@ -133,10 +134,10 @@ model = tf.keras.Sequential([
     tf.keras.layers.Softmax()
 ])
 
-# Compile the model with adam optimizer and scce loss
 model.compile(optimizer=tf.keras.optimizers.Adam(lr=1e-3),
               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
-              metrics=['sparse_categorical_accuracy'])
+              metrics=['sparse_categorical_accuracy'],
+              run_eagerly=True)
 
 # Show the model summary
 model.summary()

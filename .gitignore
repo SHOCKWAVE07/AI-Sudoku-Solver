@@ -1,0 +1,6 @@
+models/
+sudoku_models.zip
+pyrec_sudoku/__pycache__/
+cnn_logs/
+logs/
+pyrec_sudoku/model.pth
